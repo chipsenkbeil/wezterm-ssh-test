@@ -3,8 +3,8 @@ use smol::channel::Receiver;
 use std::{io, time::Duration};
 use wezterm_ssh::{Config, ExecResult, Session, SessionEvent};
 
-// Command to run
-const CMD: &str = "";
+// Command to run (on Windows)
+const CMD: &str = "cmd.exe /C echo %OS%";
 
 // Time to wait inbetween requests to get stdout/stderr from cmd
 const READER_PAUSE_MILLIS: u64 = 100;
