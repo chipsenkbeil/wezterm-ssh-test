@@ -1,4 +1,6 @@
 use async_compat::CompatExt;
+use log::*;
+use simple_logger::SimpleLogger;
 use smol::channel::Receiver;
 use std::{io, time::Duration};
 use wezterm_ssh::{Config, ExecResult, Session, SessionEvent};
@@ -10,17 +12,19 @@ const CMD: &str = "cmd.exe /C echo %OS%";
 const READER_PAUSE_MILLIS: u64 = 100;
 
 // SSH configuration settings
-const HOST: &str = "<FILL IN WITH ADDRESS>";
+const HOST: &str = "";
 const PORT: Option<u16> = None;
 const USER: Option<&str> = None;
-const BACKEND: &str = "libssh";
+const BACKEND: &str = "ssh2";
 
 // Set this without checking it in so we provide some default answers to auth prompts
-const ANSWERS: &[&str] = &["<FILL IN WITH PASSWORD>"];
+const ANSWERS: &[&str] = &[""];
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("Establishing ssh connection to {HOST}, port = {PORT:?}");
+    SimpleLogger::new().init().unwrap();
+
+    info!("Establishing ssh connection to {HOST}, port = {PORT:?}");
     let mut config = Config::new();
     config.add_default_config_files();
 
@@ -45,16 +49,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _ = config.get("port").expect("Missing port");
 
     // Establish a connection
-    println!("Session::connect({:?})", config);
+    info!("Session::connect({:?})", config);
     let (session, events) = Session::connect(config)?;
 
     // Authentication
-    println!("Authenticating...");
+    info!("Authenticating...");
     authenticate(events).await?;
 
     // Perform command and get results
-    println!("Executing {CMD}");
+    info!("Executing {CMD}");
     let output = execute_cmd(&session, CMD).await?;
+    info!("Output = {output:?}");
 
     // Print output
     println!("Success = {}", output.success);
@@ -143,7 +148,7 @@ async fn authenticate(events: Receiver<SessionEvent>) -> Result<(), Box<dyn std:
             // Prints out banner if we get it
             SessionEvent::Banner(banner) => {
                 if let Some(banner) = banner {
-                    println!("Banner: {banner}");
+                    info!("Banner: {banner}");
                 }
             }
 
