@@ -10,13 +10,13 @@ const CMD: &str = "cmd.exe /C echo %OS%";
 const READER_PAUSE_MILLIS: u64 = 100;
 
 // SSH configuration settings
-const HOST: &str = "";
+const HOST: &str = "<FILL IN WITH ADDRESS>";
 const PORT: Option<u16> = None;
 const USER: Option<&str> = None;
-const BACKEND: &str = "ssh2";
+const BACKEND: &str = "libssh";
 
 // Set this without checking it in so we provide some default answers to auth prompts
-const ANSWERS: &[&str] = &[];
+const ANSWERS: &[&str] = &["<FILL IN WITH PASSWORD>"];
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
